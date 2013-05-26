@@ -1,0 +1,67 @@
+sessionJSON Module
+==================
+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+ @package    SimpleSAMLphp
+ @subpackage sessionJSON
+ @author     Piers Harding
+ @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
+ @copyright  (C) 2012-2013 and beyond Catalyst IT Ltd, and Piers Harding
+
+
+
+`sessionJSON:Store`
+: JSON based user attribute store from session
+
+This module provides a mechanism for storing the current loggedin user attributes
+in a JSON object in hte Memcache Session store.  This enables websites
+to share the SimpleSAMLphp sessiion between applications that do not
+natively support PHP serialise.
+Both SimpleSAMLphp as an SP, and the 3rd party application must serve from the same
+domain so that the SimpleSAMLphp session cookie is shared.
+
+
+`sessionJSON:Store`
+-------------------
+
+Configuration in config/config.php:
+
+    ...
+    'session.handler'       => 'sessionJSON:Store',
+    ...
+
+
+Activate the session store module.  The remaining Memcache configuration is the same as for the
+default Memcache session storage eg:
+    'memcache_store.servers' => array(
+        array(
+            array('hostname' => 'localhost'),
+        ),
+    ),
+
+
+`www/resolver.php`
+-------------------
+
+eg:
+http://saml.host/simplesaml/module.php/sessionJSON/resolver.php?private_api_key=blahblahblah&key=7d944723c1224ade5403199794eb8a20
+
+This module also contains a web service that enables a partner service to
+query the Memcache store over HTTP.  This also has the added advantage of
+checking for replay attacks - see configuration template.
+
+Lookup can be restricted to single attempt to stop replay attacks.
+Service can be restricted to specific IPs and subnets.
+

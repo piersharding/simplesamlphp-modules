@@ -1,0 +1,93 @@
+mlepcheck Module
+================
+
+<!--
+	This file is written in Markdown syntax.
+	For more information about how to use the Markdown syntax, read here:
+	http://daringfireball.net/projects/markdown/syntax
+-->
+
+  * Version: `$Id$`
+  * Author: Piers Harding <piers@catalyst.net.nz>
+  * Package: simpleSAMLphp
+
+This module provides a mechanism to block users who have incorrect user
+attribute values according to the NZ Ministry of Education MLEP schema
+
+
+`mlepcheck:Validate`
+: validate user attributes
+
+
+`mlepcheck:Validate`
+---------------------
+
+The users not validated will be shown a 403 Forbidden page.
+
+Problems:
+
+ * Once you get the forbidden page, you can't logout at the IdP directly,
+   (as far as I know), you have to close the browser.
+
+
+To use this filter configure it in `config/config.php`:
+
+	'authproc.sp' => array(
+            95 => array('class' => 'mlepcheck:Validate',
+                                ),
+	)
+
+    or specify a subset of tests:
+
+	'authproc.sp' => array(
+            95 => array('class' => 'mlepcheck:Validate',
+                        'check' => array('mlepRole', 'mlepUsername',
+                        'mlepOrganisation',),
+                                ),
+	)
+	Any attributes listed will use the default set of tests associated with them
+	
+	
+
+    or specify a complete set of custom checks:
+
+	'authproc.sp' => array(
+            95 => array('class' => 'mlepcheck:Validate',
+                        'check' => array(
+                            'mlepRole' => array('mandatory' => true, 'single' => true, 'match' => array('Student', 'TeachingStaff', 'NonTeachingStaff', 'ParentCaregiver', 'Alumni')),
+                            'mlepSmsPersonId' => array('mandatory' => true, 'single' => true, 'match' => '/[a-zA-Z0-9]+/'),
+                            'mlepStudentNSN' => array('mandatory' => false, 'single' => true, 'match' => '/^\d{10}$/'),
+                            'mlepUsername' => array('mandatory' => false, 'single' => true, 'match' => '/.+/'),
+                            'mlepFirstAttending' => array('mandatory' => true, 'single' => true, 'match' => '/^\d{4}\-\d{2}\-\d{2}$/', 'group' =>
+array('Student')),
+                            'mlepLastAttendance' => array('mandatory' => false, 'single' => true, 'match' => '/^\d{4}\-\d{2}\-\d{2}$/', 'group' =>
+array('Student')),
+                            'mlepFirstName' => array('mandatory' => true, 'single' => true, 'match' => '/.+/'),
+                            'mlepLastName' => array('mandatory' => true, 'single' => true, 'match' => '/.+/'),
+                            'mlepPreferredName' => array('mandatory' => false, 'single' => true, 'match' => '/.+/'),
+                            'mlepAssociatedNSN' => array('mandatory' => true, 'single' => false, 'match' => '/^\d{10}$/', 'group' =>
+array('ParentCaregiver')),
+                            'mlepEmail' => array('mandatory' => false, 'single' => true, 'match' => '#^[-!\#$%&\'*+\\/0-9=?A-Z^_`a-z{|}~]+(\.[-!\#$%&\'*+\\/0-9=?A-Z^_`a-z{|}~]+)*@[-!\#$%&\'*+\\/0-9=?A-Z^_`a-z{|}~]+\.[-!\#$%&\'*+\\./0-9=?A-Z^_`a-z{|}~]+$#'),
+                            'mlepOrganisation' => array('mandatory' => true, 'single' => true, 'match' => '/^[\w\d\.-]+$/'),
+                            // other common values
+                            'uid' => array('mandatory' => false, 'single' => true, 'match' => '/.+/'),
+                            'sAMAccountName' => array('mandatory' => false, 'single' => true, 'match' => '/.+/'),
+                            'mail' => array('mandatory' => false, 'single' => true, 'match' => '#^[-!\#$%&\'*+\\/0-9=?A-Z^_`a-z{|}~]+(\.[-!\#$%&\'*+\\/0-9=?A-Z^_`a-z{|}~]+)*@[-!\#$%&\'*+\\/0-9=?A-Z^_`a-z{|}~]+\.[-!\#$%&\'*+\\./0-9=?A-Z^_`a-z{|}~]+$#'),
+                            // EPPN is like an email address
+                            'eduPersonPrincipalName' => array('mandatory' => false, 'single' => true, 'match' => '#^[-!\#$%&\'*+\\/0-9=?A-Z^_`a-z{|}~]+(\.[-!\#$%&\'*+\\/0-9=?A-Z^_`a-z{|}~]+)*@[-!\#$%&\'*+\\/0-9=?A-Z^_`a-z{|}~]+\.[-!\#$%&\'*+\\./0-9=?A-Z^_`a-z{|}~]+$#'),
+                                        ),
+                                ),
+	)
+	
+	A custom check must have atleast:
+	 * be an array
+	 * contain 'single' which indicates a single value true/false
+	 * contain 'mandatory' which indicates whether the attribute is mandatory - true/false
+	 * contaim 'match' which is a regex that positively checks for a correct value or an array of absolute values - example mlepRole above
+    An optional extra value is 'group' which narrows the application of the check to an account with an mlepRole of one of the values contained therein (an array) - an example is mlepAssociatedNSN above.
+
+
+It's probably a good idea to make this a late run authproc, as you may have
+any number of other filters that compile the correct values for a users
+account.
+
