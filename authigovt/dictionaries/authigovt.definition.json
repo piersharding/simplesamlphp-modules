@@ -1,0 +1,20 @@
+{
+	"confirm_question": {
+		"en": "Do you wish to link RealMe ID %IGOVTID% to the NZ Post AVS user %USER%?"
+	},
+	"remember": {
+		"en": "Remember this decision"
+	},
+	"confirm": {
+		"en": "Confirm"
+	},
+	"notconfirm": {
+		"en": "Cancel"
+	},
+	"user_pass_header": {
+		"en": "To link your iGovt account with your NZ Post AVS account, Enter your username and password"
+	},
+	"link_header": {
+		"en": "Confirm the link of your NZ Post AVS account with your iGovt token"
+	}
+}

@@ -1,0 +1,130 @@
+authsource:
+
+<?php
+
+$config = array(
+
+    'iGovt-sp' => array(
+        'saml:SP',
+        'entityID' => 'https://www.kaupapa.govt.nz/ilearn/DIA',
+        'idp' => 'https://www.mts-logon.i.govt.nz/mts2',
+        'ReturnTo' => 'https://dia-totara-mts2.elearning.catalyst.net.nz/',
+        'discoURL' => NULL,
+        'host' => 'dia-totara-mts2.elearning.catalyst.net.nz',
+        'NameIDPolicy' => 'urn:oasis:names:tc:SAML:2.0:nameid-format:persistent',
+        'AuthnContextClassRef' => 'urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:LowStrength',
+        'ProtocolBinding' => 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact',
+        'redirect.sign'   => TRUE,
+        'ForceAuthn' => FALSE,
+        'IsPassive' => FALSE,
+        'saml.SOAPClient.certificate' => 'mts_mutualssl_saml_sp.combined',
+        'saml.SOAPClient.privatekey_pass' => 'password',
+        'privatekey' => 'mts_saml_sp.pem',
+        'certificate' => 'mts_saml_sp.cer',
+        'privatekey_pass' => 'password',
+        'authproc' => array(
+            20 => array(
+                'class' => 'saml:NameIDAttribute',
+                'format' => '%V',
+            ),  
+        ),  
+    ),  
+);
+
+saml20-idp-remote.sp:
+
+
+<?php
+$metadata['https://www.mts-logon.i.govt.nz/mts2'] = array (
+  'entityid' => 'https://www.mts-logon.i.govt.nz/mts2',
+  'name' => 
+  array (
+    'en-us' => 'IGOVT
+            LOGON - DIA',
+  ),
+  'description' => 
+  array (
+    'en-us' => 'IGOVT LOGON - DIA',
+  ),
+  'OrganizationName' => 
+  array (
+    'en-us' => 'IGOVT LOGON - DIA',
+  ),
+  'OrganizationDisplayName' => 
+  array (
+    'en-us' => 'IGOVT
+            LOGON - DIA',
+  ),
+  'url' => 
+  array (
+    'en-us' => 'http://www.i.govt.nz',
+  ),
+  'OrganizationURL' => 
+  array (
+    'en-us' => 'http://www.i.govt.nz',
+  ),
+  'contacts' => 
+  array (
+    0 => 
+    array (
+      'contactType' => 'technical',
+    ),
+  ),
+  'metadata-set' => 'saml20-idp-remote',
+  'redirect.sign' => true,
+  'SingleSignOnService' => 
+  array (
+    0 => 
+    array (
+      'Binding' => 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect',
+      'Location' => 'https://www.mts-logon.i.govt.nz/mts2/controller/SSO',
+    ),
+  ),
+  'SingleLogoutService' => 
+  array (
+    0 => 
+    array (
+      'Binding' => 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect',
+      'Location' => 'https://www.mts-logon.i.govt.nz/mts2/controller/SLO',
+      'ResponseLocation' => 'https://www.mts-logon.i.govt.nz/mts2/controller/SLOResponse',
+    ),
+  ),
+  'ArtifactResolutionService' => 
+  array (
+    0 => 
+    array (
+      'Binding' => 'urn:oasis:names:tc:SAML:2.0:bindings:SOAP',
+      'Location' => 'https://as1.mts-logon.i.govt.nz:44320/soap/services/SAMLMessageProcessor/AP',
+      'index' => 0,
+      'isDefault' => true,
+    ),
+    1 => 
+    array (
+      'Binding' => 'urn:oasis:names:tc:SAML:2.0:bindings:SOAP',
+      'Location' => 'https://as2.mts-logon.i.govt.nz:44320/soap/services/SAMLMessageProcessor/AP',
+      'index' => 1,
+      'isDefault' => false,
+    ),
+  ),
+  'keys' => 
+  array (
+    0 => 
+    array (
+      'encryption' => false,
+      'signing' => true,
+      'type' => 'X509Certificate',
+      'X509Certificate' => '
+                        MIICGDCCAYECBEnn9rkwDQYJKoZIhvcNAQEFBQAwUzELMAkGA1UEBhMCTloxDDAKBgNVBAoTA0RJ
+                        QTEUMBIGA1UECxMLSUdPVlQgTE9HT04xIDAeBgNVBAMTF2Nscy5tdHMtbG9nb24uaS5nb3Z0Lm56
+                        MB4XDTA5MDQxNzAzMjU0NVoXDTE0MDQyNDAzMjU0NVowUzELMAkGA1UEBhMCTloxDDAKBgNVBAoT
+                        A0RJQTEUMBIGA1UECxMLSUdPVlQgTE9HT04xIDAeBgNVBAMTF2Nscy5tdHMtbG9nb24uaS5nb3Z0
+                        Lm56MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDZF3gn07o2/J/lwkt1q4yUXCUECh27+XyK
+                        dFVbNGdNnfTkUMCazK06ZQDuYEynPl7Wdo/CtgEhAuTh0V3KiTAo9MuzSW8waUReHcOeHwUTdHJQ
+                        8qIcA69P4/TbN/QUx/KytokovPKxQxUR0uHhj22ryhhI0jt+ww2LiBsCBj6YVwIDAQABMA0GCSqG
+                        SIb3DQEBBQUAA4GBAHy+agwV+5baS+PABboOB14QUpQFzfzEPHizmOZHSeQXJfEPMqjsDju9RzhP
+                        kvqBe7/jUjoSi5r5RGvQpFupWva/ATEZZoMfXSBbzICBC5TDV98+KtZIz/kqzsNKv0NFeR1dui9U
+                        EH3UhrnRFEAkbNhygygrX1FFGtGFNUx/FQdI
+                    ',
+    ),
+  ),
+);

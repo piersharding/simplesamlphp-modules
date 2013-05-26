@@ -1,0 +1,93 @@
+authigovt Module
+=================
+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+ @package    SimpleSAMLphp
+ @subpackage authigovt
+ @author     Piers Harding
+ @license    http://www.gnu.org/copyleft/gpl.html GNU GPL
+ @copyright  (C) 2012-2013 and beyond Catalyst IT Ltd, and Piers Harding
+
+
+This module provides an authentication source that points specifically at iGovt SAML 2.0 SP integration
+
+The module expects the integration of a local LDAP directory, and will match the user account based on FLT
+in the processing pipeline to augment the user attributes based on a local mapping.
+
+The delegate-sp is used to 'forward' iGovt negotiation to the SP configuration that is partnered with iGovt - see
+example below.
+
+
+`authigovt:iGovt`
+: authentication source based on iGovt SAML 2.0 SP integration
+
+
+`authigovt:iGovt`
+------------------
+
+Configuration:
+
+'authigovt' => array(
+        'authigovt:iGovt',
+        'delegate-sp' => 'iGovt-sp',
+        'linkattr' => 'eduPersonPrincipalName',
+        'loginauthid' => 'ldap',
+        'host' => 'localhost',
+        'port' => 389,
+        'binddn' => 'cn=admin,dc=example,dc=com',
+        'password' => 'letmein',
+        'basedn' => 'dc=example,dc=com',
+        'searchfilter' => 'eduPersonPrincipalName=:uidfield',
+        'protocol' => 3,
+        ),
+
+	
+delegate-sp - the authid of the SP configured for iGovt integration.
+
+The only useful attribute that we get back from iGovt is 'nameid'.  This is the opaque FLT.
+
+Example iGovt SP configuration:
+
+    'iGovt-sp' => array(
+        'saml:SP',
+        'RelayState' => 'https://realme.catalystdemo.net.nz',
+        # Change to value agreed with DIA:
+        'entityID' => 'https://realme.catalystdemo.net.nz/app/realmeSysTest',
+        'idp' => 'https://www.ite.i.govt.nz',
+        # Change to your return ladning URL because iGovt can't honour long RelayState values:
+        'ReturnTo' => 'https://realme.catalystdemo.net.nz/SSOReturn',
+        'discoURL' => NULL,
+        # Change to your domain name:
+        'host' => 'realme.catalystdemo.net.nz',
+        'NameIDPolicy' => 'urn:oasis:names:tc:SAML:2.0:nameid-format:persistent',
+        'AuthnContextClassRef' => 'urn:nzl:govt:ict:stds:authn:deployment:GLS:SAML:2.0:ac:classes:LowStrength',
+        'ProtocolBinding' => 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact',
+        'redirect.sign' => TRUE,
+        'ForceAuthn' => FALSE,
+        'IsPassive' => FALSE,
+        'saml.SOAPClient.verify' => FALSE,
+        'saml.SOAPClient.certificate' => 'ite_mutualssl_saml_sp.combined',
+        'saml.SOAPClient.privatekey_pass' => 'password',
+        'privatekey' => 'ite_saml_sp.pem',
+        'certificate' => 'ite_saml_sp.crt',
+        'authproc' => array(
+        20 => array(
+        'class' => 'saml:NameIDAttribute',
+                'format' => '%V',),
+        ),
+        'acs.Bindings' => array(
+                           'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Artifact',
+                                ),
+    ),
