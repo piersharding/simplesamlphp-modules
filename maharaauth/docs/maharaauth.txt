@@ -1,0 +1,31 @@
+maharaauth Module
+=================
+
+<!--
+	This file is written in Markdown syntax.
+	For more information about how to use the Markdown syntax, read here:
+	http://daringfireball.net/projects/markdown/syntax
+-->
+
+  * Version: `$Id$`
+  * Author: Piers Harding, piers@catalyst.net.nz
+  * Package: simpleSAMLphp
+
+This module provides an authentication source that points specifically at Mahara internal users
+
+
+
+`maharaauth:UserPass`
+: authentication source based on Mahara internal users
+
+
+`maharaauth:UserPass`
+---------------------------
+
+Configuration:
+
+    'maharaauth' => array(
+        'maharaauth:UserPass',
+        'mahararoot' => '/path/to/mahara/htdocs',
+    ),
+
