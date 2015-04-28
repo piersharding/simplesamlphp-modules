@@ -1,20 +1,34 @@
 <?php
+/* Add the OpenIDConnect library to the search path. */
+set_include_path(get_include_path() . PATH_SEPARATOR . dirname(dirname(__FILE__)) . '/extlib');
+require_once('OpenIDConnectClient.php5');
 
 $config = SimpleSAML_Configuration::getInstance();
 
+$returned = false;
+
 /* Find the authentication state. */
 if (!array_key_exists('AuthState', $_REQUEST)) {
-	throw new SimpleSAML_Error_BadRequest('Missing mandatory parameter: AuthState');
+    if (empty($_SESSION['openid_connect_AuthState'])) {
+    	throw new SimpleSAML_Error_BadRequest('Missing mandatory state value: openid_connect_AuthState');
+    }
+    else {
+        $authState = $_SESSION['openid_connect_AuthState'];
+        unset($_SESSION['openid_connect_AuthState']);
+        $returned = true;
+    }
 }
-$state = SimpleSAML_Auth_State::loadState($_REQUEST['AuthState'], 'authgoogle:state');
-$authState = $_REQUEST['AuthState'];
+else {
+    $authState = $_REQUEST['AuthState'];
+}
+$state = SimpleSAML_Auth_State::loadState($authState, 'authgoogle:state');
 $authSource = SimpleSAML_Auth_Source::getById($state['authgoogle:AuthId']);
 if ($authSource === NULL) {
 	throw new SimpleSAML_Error_BadRequest('Invalid AuthId \'' . $state['authgoogle:AuthId'] . '\' - not found.');
 }
 
 try {
-	if (array_key_exists('returned', $_GET)) {
+	if ($returned) {
 		$authSource->postAuth($state);
 	} else {
 		$authSource->doAuth($state);

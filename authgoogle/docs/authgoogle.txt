@@ -11,7 +11,7 @@ authgoogle Module
   * Author: Piers Harding, piers@catalyst.net.nz
   * Package: simpleSAMLphp
 
-This module provides an authentication source that points specifically at Google OpenId
+This module provides an authentication source that points specifically at Google OpenId Connect
 
 
 
@@ -27,33 +27,14 @@ Configuration:
     'authgoogle' => array(
         'authgoogle:OpenIDConsumer',
         'forcelogin' => true,  // optionally force login again
-		'googleDomain' => 'ompka.net', // optionally specify a login domain
+		'clientid' => 'xxx',   // Your Web Applications clientId
+        'secret' => 'YYY',     // You Web Applications client secret
     ),
 
-    
-forcelogin - this requests Google to challenge the user with the login screen 
+
+forcelogin - this requests Google to challenge the user with the login screen
 on each authentication request.
 
 
-The three attributes you can get access to are email, firstname, and lastname.
+The four attributes you can get access to are openid, email, firstname, and lastname.
 
-
-Important:
-
-Please note that this module does not restrict who can login from Google - to do this you will
-need to implement further authproc rules - some possible configurations are:
-
-        // grab the organisation from the email address
-        50 => array(
-            'class' => 'core:ScopeFromAttribute',
-            'sourceAttribute' => 'email',
-            'targetAttribute' => 'mlepOrganisation',
-        ),
-
-        // restrict access to a particular organisation scope
-        85 => array('class' => 'authorize:Authorize',
-                    'mlepOrganisation' => '/^hogwarts\.school\.nz$/',
-                    ),
-
-Note: these examples are specific to New Zealand K12 school requirements, but I hope you get the 
-picture.
